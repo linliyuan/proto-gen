@@ -29,8 +29,8 @@ func main() {
 
 	// protoc 将一组文件结构传递给程序处理
 	for _, file := range plugin.Files {
-		_ = util.SendToTestFile("file.GeneratedFilenamePrefix", file.GeneratedFilenamePrefix)
-		_ = util.SendToTestFile("file.GoPackageName", file.GoPackageName)
+		_ = util.SendToTestFile("test_out.txt", "file.GeneratedFilenamePrefix", file.GeneratedFilenamePrefix)
+		_ = util.SendToTestFile("test_out.txt", "file.GoPackageName", file.GoPackageName)
 
 		// 是时候生成代码了……！
 
@@ -50,17 +50,8 @@ func main() {
 		}
 
 		// 4. 指定输出文件名，在这种情况下为_foo.pb.go
+		// 以下方式进行生成会把旧代码先全部清空
 		filename := file.GeneratedFilenamePrefix + "_foo.pb.go"
-		//fileExists, err := PathExists(filename)
-		//if err != nil {
-		//	panic(err)
-		//}
-		//if fileExists {
-		//	if err = os.Remove(filename); err != nil {
-		//		panic(err)
-		//	}
-		//}
-
 		file := plugin.NewGeneratedFile(filename, ".")
 
 		// 5. 将设概念车呢个的代码，从缓冲区写入到文件
