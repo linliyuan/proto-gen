@@ -3,19 +3,13 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/linliyuan/proto-gen/util"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/pluginpb"
 	"io/ioutil"
 	"os"
 )
-
-func sendToTestFile(arr ...interface{}) error {
-	out, _ := os.Create("./test_out.text")
-
-	_, err := fmt.Fprintln(out, arr...)
-	return err
-}
 
 func main() {
 	// Protoc 将protobuf文件编译为 plugin pb.CodeGeneratorRequest 结构，并输出到stdin中
@@ -35,7 +29,7 @@ func main() {
 
 	// protoc 将一组文件结构传递给程序处理
 	for _, file := range plugin.Files {
-		_ = sendToTestFile("file.GeneratedFilenamePrefix", file.GeneratedFilenamePrefix)
+		_ = util.SendToTestFile("file.GeneratedFilenamePrefix", file.GeneratedFilenamePrefix)
 		_ = sendToTestFile("file.GoPackageName", file.GoPackageName)
 
 		// 是时候生成代码了……！
@@ -50,13 +44,23 @@ func main() {
 		// 3. 为每个message生成 Foo() 方法
 		for _, msg := range file.Proto.MessageType {
 			buf.Write([]byte(fmt.Sprintf(`
-            func (x %s) Foo() string {
+            func (x *%s) Foo() string {
                return "bar"
             }`, *msg.Name)))
 		}
 
-		// 4. 指定输出文件名，在这种情况下为test.foo.go
-		filename := file.GeneratedFilenamePrefix + ".foo.go"
+		// 4. 指定输出文件名，在这种情况下为_foo.pb.go
+		filename := file.GeneratedFilenamePrefix + "_foo.pb.go"
+		//fileExists, err := PathExists(filename)
+		//if err != nil {
+		//	panic(err)
+		//}
+		//if fileExists {
+		//	if err = os.Remove(filename); err != nil {
+		//		panic(err)
+		//	}
+		//}
+
 		file := plugin.NewGeneratedFile(filename, ".")
 
 		// 5. 将设概念车呢个的代码，从缓冲区写入到文件

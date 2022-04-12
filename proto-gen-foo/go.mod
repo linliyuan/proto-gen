@@ -1,4 +1,4 @@
-module github.com/linliyuan/proto-gen/protoc-gen-foo
+module github.com/linliyuan/proto-gen/protoc-gen-go-foo
 
 go 1.18
 
