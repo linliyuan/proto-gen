@@ -1,0 +1,1 @@
+protoc --go_out=../ --go-grpc_out=../ --go-foo_out=../ ./proto/*.proto

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package proto;
+
+
+option go_package = "proto-gen/proto";
+
+message Data {
+  // @inject_tag: v:"required|length:6,16"
+  string value = 1;
+}
+
+service HelloService {
+  rpc Hello (Data) returns (Data);
+}
