@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 )
@@ -16,9 +17,24 @@ func PathExists(path string) (bool, error) {
 	return false, err
 }
 
-func SendToTestFile(arr ...interface{}) error {
-	out, _ := os.Open("./test_out.text")
+func SendToTestFile(filePath string, arr ...interface{}) error {
+	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
+	if err != nil {
+		return err
+	}
 
-	_, err := fmt.Fprintln(out, arr...)
-	return err
+	//及时关闭file句柄
+	defer func() {
+		_ = file.Close()
+	}()
+
+	//写入文件时，使用带缓存的 *Writer
+	write := bufio.NewWriter(file)
+	_, err = fmt.Fprintln(write, arr...)
+	if err != nil {
+		return err
+	}
+
+	//Flush将缓存的文件真正写入到文件中
+	return write.Flush()
 }
